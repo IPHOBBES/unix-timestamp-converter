@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>inder's unix timestamp converter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.cdnfonts.com/css/ds-digital" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <header class="header">
+      <h1 class="title">inder's unix timestamp converter</h1>
+      <p class="tagline">Convert between Unix time and human-readable date & time</p>
+    </header>
+
+    <section class="now-block card">
+      <h2>Now</h2>
+      <div class="now-content">
+        <div class="now-item">
+          <span class="label">Unix (seconds)</span>
+          <div class="value-row">
+            <output id="now-unix" class="value mono" aria-live="polite">—</output>
+            <button type="button" id="copy-now-unix" class="btn-copy" title="Copy">Copy</button>
+          </div>
+        </div>
+        <div class="now-item">
+          <span class="label">Human date</span>
+          <div class="value-row">
+            <output id="now-human" class="value" aria-live="polite">—</output>
+            <button type="button" id="copy-now-human" class="btn-copy" title="Copy">Copy</button>
+          </div>
+        </div>
+      </div>
+      <button type="button" id="btn-now" class="btn-primary">Use current time</button>
+    </section>
+
+    <section class="card" aria-labelledby="unix-to-date-heading">
+      <h2 id="unix-to-date-heading">Unix timestamp → Date</h2>
+      <label for="unix-input" class="visually-hidden">Unix timestamp (seconds or milliseconds)</label>
+      <input
+        type="text"
+        id="unix-input"
+        class="input mono"
+        placeholder="e.g. 1700000000 or 1700000000000"
+        inputmode="numeric"
+        autocomplete="off"
+      >
+      <p id="unix-error" class="error" role="alert" aria-live="polite" hidden></p>
+      <div class="output-row">
+        <span class="label">Date & time</span>
+        <output id="unix-output" class="value output" for="unix-input" aria-live="polite">Enter a timestamp above</output>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="date-to-unix-heading">
+      <h2 id="date-to-unix-heading">Date → Unix timestamp</h2>
+      <label for="date-input" class="visually-hidden">Date and time</label>
+      <input
+        type="datetime-local"
+        id="date-input"
+        class="input"
+        step="1"
+      >
+      <p id="date-error" class="error" role="alert" aria-live="polite" hidden></p>
+      <div class="output-row">
+        <span class="label">Unix (seconds)</span>
+        <div class="value-row">
+          <output id="date-output" class="value mono output" for="date-input" aria-live="polite">Pick a date & time</output>
+          <button type="button" id="copy-date-unix" class="btn-copy" title="Copy" hidden>Copy</button>
+        </div>
+      </div>
+    </section>
+    <footer class="footer">
+      <span class="credit">&gt;_ inder</span>
+    </footer>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
