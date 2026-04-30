@@ -5,6 +5,7 @@
   const unixOutput = document.getElementById('unix-output');
   const unixError = document.getElementById('unix-error');
   const dateInput = document.getElementById('date-input');
+  const datePickerToggle = document.getElementById('date-picker-toggle');
   const dateOutput = document.getElementById('date-output');
   const dateError = document.getElementById('date-error');
   const nowUnix = document.getElementById('now-unix');
@@ -13,6 +14,93 @@
   const copyNowUnix = document.getElementById('copy-now-unix');
   const copyNowHuman = document.getElementById('copy-now-human');
   const copyDateUnix = document.getElementById('copy-date-unix');
+  const hasFlatpickr = typeof window.flatpickr === 'function';
+  let datePicker = null;
+
+  if (hasFlatpickr) {
+    datePicker = window.flatpickr(dateInput, {
+      enableTime: true,
+      enableSeconds: true,
+      time_24hr: false,
+      allowInput: false,
+      dateFormat: 'd/m/Y, h:i:S K',
+      clickOpens: false,
+      position: 'above right',
+      onReady: [installCustomMonthMenu],
+      onMonthChange: [syncCustomMonthMenu],
+      onYearChange: [syncCustomMonthMenu]
+    });
+  }
+
+  function installCustomMonthMenu(selectedDates, dateStr, instance) {
+    const calendar = instance.calendarContainer;
+    const monthSelect = calendar.querySelector('.flatpickr-monthDropdown-months');
+    if (!monthSelect || calendar.querySelector('.custom-month-button')) return;
+
+    const monthNames = instance.l10n.months.longhand;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'custom-month-button';
+    button.setAttribute('aria-haspopup', 'listbox');
+    button.setAttribute('aria-expanded', 'false');
+
+    const menu = document.createElement('div');
+    menu.className = 'custom-month-menu';
+    menu.setAttribute('role', 'listbox');
+    menu.hidden = true;
+
+    monthNames.forEach(function (month, index) {
+      const option = document.createElement('button');
+      option.type = 'button';
+      option.className = 'custom-month-option';
+      option.setAttribute('role', 'option');
+      option.dataset.month = String(index);
+      option.textContent = month;
+      option.addEventListener('click', function (event) {
+        event.stopPropagation();
+        instance.changeMonth(index, false);
+        closeCustomMonthMenu(instance);
+      });
+      menu.appendChild(option);
+    });
+
+    monthSelect.hidden = true;
+    monthSelect.insertAdjacentElement('afterend', button);
+    button.insertAdjacentElement('afterend', menu);
+
+    button.addEventListener('click', function (event) {
+      event.stopPropagation();
+      const isOpen = !menu.hidden;
+      menu.hidden = isOpen;
+      button.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    document.addEventListener('click', function () {
+      closeCustomMonthMenu(instance);
+    });
+
+    instance._customMonthMenu = { button, menu };
+    syncCustomMonthMenu(null, null, instance);
+  }
+
+  function syncCustomMonthMenu(selectedDates, dateStr, instance) {
+    if (!instance._customMonthMenu) return;
+    const monthNames = instance.l10n.months.longhand;
+    const currentMonth = instance.currentMonth;
+    const button = instance._customMonthMenu.button;
+    button.textContent = monthNames[currentMonth];
+    instance._customMonthMenu.menu.querySelectorAll('.custom-month-option').forEach(function (option) {
+      const selected = Number(option.dataset.month) === currentMonth;
+      option.classList.toggle('selected', selected);
+      option.setAttribute('aria-selected', String(selected));
+    });
+  }
+
+  function closeCustomMonthMenu(instance) {
+    if (!instance._customMonthMenu) return;
+    instance._customMonthMenu.menu.hidden = true;
+    instance._customMonthMenu.button.setAttribute('aria-expanded', 'false');
+  }
 
   function showError(el, message) {
     el.textContent = message;
@@ -58,13 +146,17 @@
 
   function dateToUnix() {
     clearError(dateError);
-    const value = dateInput.value;
-    if (!value) {
+    const selectedDate = datePicker && datePicker.selectedDates.length > 0
+      ? datePicker.selectedDates[0]
+      : (dateInput.value ? new Date(dateInput.value) : null);
+
+    if (!selectedDate) {
       dateOutput.textContent = 'Pick a date & time';
       copyDateUnix.hidden = true;
       return;
     }
-    const ms = new Date(value).getTime();
+
+    const ms = selectedDate.getTime();
     if (Number.isNaN(ms)) {
       showError(dateError, 'Invalid date');
       dateOutput.textContent = '—';
@@ -93,7 +185,11 @@
     nowUnix.textContent = String(sec);
     nowHuman.textContent = formatHumanDate(ms);
     unixInput.value = String(sec);
-    dateInput.value = toDateTimeLocal(ms);
+    if (datePicker) {
+      datePicker.setDate(new Date(ms), true);
+    } else {
+      dateInput.value = toDateTimeLocal(ms);
+    }
     clearError(unixError);
     clearError(dateError);
     unixOutput.textContent = formatHumanDate(ms);
@@ -118,10 +214,39 @@
     );
   }
 
+  function toggleDatePicker() {
+    if (datePicker) {
+      if (datePicker.isOpen) {
+        datePicker.close();
+        return;
+      }
+      datePicker.open();
+      return;
+    }
+
+    if (document.activeElement === dateInput) {
+      dateInput.blur();
+      return;
+    }
+
+    dateInput.focus();
+    try {
+      if (typeof dateInput.showPicker === 'function') {
+        dateInput.showPicker();
+        return;
+      }
+      dateInput.click();
+    } catch (e) {}
+  }
+
   unixInput.addEventListener('input', unixToDate);
   unixInput.addEventListener('paste', function () { setTimeout(unixToDate, 0); });
   dateInput.addEventListener('input', dateToUnix);
   dateInput.addEventListener('change', dateToUnix);
+  datePickerToggle.addEventListener('pointerdown', function (event) {
+    event.preventDefault();
+  });
+  datePickerToggle.addEventListener('click', toggleDatePicker);
   btnNow.addEventListener('click', setNow);
 
   copyNowUnix.addEventListener('click', function () {

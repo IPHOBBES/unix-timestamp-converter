@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.cdnfonts.com/css/ds-digital" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -60,12 +61,21 @@
     <section class="card" aria-labelledby="date-to-unix-heading">
       <h2 id="date-to-unix-heading">Date → Unix timestamp</h2>
       <label for="date-input" class="visually-hidden">Date and time</label>
-      <input
-        type="datetime-local"
-        id="date-input"
-        class="input"
-        step="1"
-      >
+      <div class="date-input-wrap">
+        <input
+          type="text"
+          id="date-input"
+          class="input"
+          autocomplete="off"
+          placeholder="Pick a date & time"
+        >
+        <button type="button" id="date-picker-toggle" class="date-picker-toggle" aria-label="Show local date and time picker" title="Show local date and time picker">
+          <svg aria-hidden="true" viewBox="0 0 24 24" class="date-picker-icon">
+            <rect x="3.5" y="5.5" width="17" height="15" rx="2"></rect>
+            <path d="M8 3.5v4M16 3.5v4M3.5 9.5h17"></path>
+          </svg>
+        </button>
+      </div>
       <p id="date-error" class="error" role="alert" aria-live="polite" hidden></p>
       <div class="output-row">
         <span class="label">Unix (seconds)</span>
@@ -79,6 +89,7 @@
       <span class="credit">&gt;_ inder</span>
     </footer>
   </main>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="script.js"></script>
 </body>
 </html>
