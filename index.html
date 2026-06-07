@@ -63,9 +63,10 @@
       <label for="date-input" class="visually-hidden">Date and time</label>
       <div class="date-input-wrap">
         <input
-          type="text"
+          type="datetime-local"
           id="date-input"
           class="input"
+          step="1"
           autocomplete="off"
           placeholder="Pick a date & time"
         >
@@ -86,7 +87,7 @@
       </div>
     </section>
     <footer class="footer">
-      <span class="credit">&gt;_ inder</span>
+      <span class="credit">&gt;<span class="cursor-blink">_</span> inder</span>
     </footer>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

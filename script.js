@@ -18,6 +18,7 @@
   let datePicker = null;
 
   if (hasFlatpickr) {
+    dateInput.type = 'text';
     datePicker = window.flatpickr(dateInput, {
       enableTime: true,
       enableSeconds: true,
@@ -127,8 +128,7 @@
     const num = Number(s);
     if (Number.isNaN(num) || !Number.isFinite(num)) return { ok: false, error: 'Not a valid number' };
     if (num < 0) return { ok: false, error: 'Timestamp must be ≥ 0' };
-    let ms = num;
-    if (num <= 1e12) ms = num * 1000;
+    const ms = num < 1e11 ? num * 1000 : num;
     if (ms > 864000000000000) return { ok: false, error: 'Timestamp too large' };
     return { ok: true, ms };
   }
