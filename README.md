@@ -9,7 +9,7 @@ A simple web app to convert between Unix timestamps (seconds or milliseconds) an
 - **Now**: Fill both converters with the current time and copy either representation.
 - **Resilient date input**: Falls back to the browser's native date and time picker if the calendar library is unavailable.
 
-Try it: https://iphobbes.github.io/unix-timestamp-converter/
+Try it: https://inderstudio.github.io/unix-timestamp-converter/
 
 ## License
 
